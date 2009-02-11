@@ -1,0 +1,21 @@
+<h1>Editing user</h1>
+
+<% form_for(@user, :html => { :multipart => true }) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </p>
+  <p>
+    <%= image_tag @user.avatar.url(:normal) %>
+    <%= f.label :avatar_file_name %><br />
+    <%= f.file_field :avatar %>
+  </p>
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @user %> |
+<%= link_to 'Back', users_path %>

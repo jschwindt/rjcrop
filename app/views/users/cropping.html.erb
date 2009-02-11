@@ -1,0 +1,58 @@
+<% content_for :headers do %>
+<%= javascript_include_tag 'jquery-1.3.1.min.js', 'jquery.Jcrop.pack.js' %>
+<%= stylesheet_link_tag 'jquery.Jcrop.css' %>
+<script language="Javascript">
+
+function showPreview(coords)
+{
+	var rx = <%= User::AVATAR_SW %> / coords.w;
+	var ry = <%= User::AVATAR_SH %> / coords.h;
+	var ratio = <%= @user.avatar_geometry(:original).width %> / <%= @user.avatar_geometry(:normal).width %>; 
+
+	$('#preview').css({
+		width: Math.round(rx * <%= @user.avatar_geometry(:normal).width.to_i %>) + 'px',
+		height: Math.round(ry * <%= @user.avatar_geometry(:normal).height.to_i %>) + 'px',
+		marginLeft: '-' + Math.round(rx * coords.x) + 'px',
+		marginTop: '-' + Math.round(ry * coords.y) + 'px'
+	});
+  $('#crop_x').val(Math.round(coords.x * ratio));
+  $('#crop_y').val(Math.round(coords.y * ratio));
+  $('#crop_w').val(Math.round(coords.w * ratio));
+  $('#crop_h').val(Math.round(coords.h * ratio));
+}
+
+$(function() {
+  $('#cropbox').Jcrop({
+      onSelect: showPreview,
+      onChange: showPreview,
+      setSelect:   [ 0, 0, 240, 240 ],
+      aspectRatio: <%= User::AVATAR_SW %>/<%= User::AVATAR_SH %>
+    });
+});
+
+</script>
+<% end %>
+
+<p>
+  <b>Name:</b>
+  <%=h @user.name %>
+</p>
+
+<p>
+  <b>Avatar:</b>
+  <%= image_tag @user.avatar.url(:normal), :id => 'cropbox' %>
+<div style="width:<%= User::AVATAR_SW %>px;height:<%= User::AVATAR_SH %>px;overflow:hidden">
+  <%= image_tag @user.avatar.url(:normal), :id => 'preview' %>
+</div>
+</p>
+
+<% form_for :user, :url => crop_user_path(@user) do |f| %>
+  <%= f.text_field :crop_x, :id => 'crop_x' %><br />
+  <%= f.text_field :crop_y, :id => 'crop_y' %><br />
+  <%= f.text_field :crop_w, :id => 'crop_w' %><br />
+  <%= f.text_field :crop_h, :id => 'crop_h' %><br />
+  <%= f.submit "Crop!" %>
+<% end %>
+
+<%= link_to 'Edit', edit_user_path(@user) %> |
+<%= link_to 'Back', users_path %>
