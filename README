@@ -6,5 +6,12 @@ Paperclip rails plugin and the Jcrop jQuery plugin for selecting the cropping ar
 Paperclip project page: http://github.com/thoughtbot/paperclip/tree/master
 Jcrop home page: http://deepliquid.com/content/Jcrop.html
 
+=== Downloading and testing the appication
+
+git clone git://github.com/jschwindt/rjcrop.git
+cd rjcrop
+rake db:migrate
+./script/server
+
 
 
