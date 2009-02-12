@@ -7,6 +7,10 @@ the cropping area.
 Paperclip project page: http://github.com/thoughtbot/paperclip/tree/master
 Jcrop home page: http://deepliquid.com/content/Jcrop.html
 
+Most of the inspiration for this application was taken from this thread: 
+http://groups.google.com/group/paperclip-plugin/browse_thread/thread/817266ea5b37580c
+and especially this helpful piece of code: http://gist.github.com/60470
+
 ==Downloading and testing the application
 
  git clone git://github.com/jschwindt/rjcrop.git
@@ -31,9 +35,9 @@ by the plugin.
     has_attached_file :avatar,
           :styles => { :normal => "240x240>",
                        :small = > "55x55"   },
-          :convert_options => { :normal => *proc { |m| m.avatar_crop_str }*,
-                                :small => *proc { |m| m.avatar_crop_str }* },
-          *:processors => [:jcropper]*
+          :convert_options => { :normal => proc { |m| m.avatar_crop_str },
+                                :small => proc { |m| m.avatar_crop_str } },
+          :processors => [:jcropper]
   
     attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
   
@@ -45,7 +49,7 @@ by the plugin.
       end
     end
 
-    # helper method used by the cropper view to get the real file geometry
+    # helper method used by the cropper view to get the real image geometry
     def avatar_geometry(style = :original)
       @geometry ||= {}
       @geometry[style] ||= Paperclip::Geometry.from_file avatar.path(style)
@@ -54,8 +58,40 @@ by the plugin.
   end
 
 The model includes the +has_attached_file+ as usual but it specifies a custom 
-processor +jcropper+ that is slightly different from the original +thumbnail.rb+
+processor +jcropper+ that is slightly different from the original +thumbnail.rb+ 
 processor provided by Paperclip.
+
+The process of creating the avatar works like this:
+
+- The user upload an image and Paperclip creates the +normal+ and the +small+ 
+version and because none of the +:crop_x, :crop_y, :crop_w, :crop_h+ are defined 
++avatar_crop_str+ returns an empty string. That way the +jcropper+ processor 
+works just like the original +thumbnail+ processor.
+ 
+- Then the user is presented with the +normal+ thumbnail that is used to choose 
+the cropping rectangle.
+ 
+- Finally the Paperclip +reprocess!+ method is invoked in the controller:
+
+Controller:
+ # POST /users/1/crop
+ def crop
+   @user = User.find(params[:id])
+
+   if @user.update_attributes(params[:user])
+     @user.avatar.reprocess!
+   end
+   redirect_to(users_url)
+ end 
+ 
+- Because now the cropping rectangle parameters are provided by the view, then 
+the +convert_options+ specifies how to crop the original image. These options 
+look like: +"-crop 500x500+125+450"+ that in the ImageMagick convert command 
+means "crop the original image at offset 125,450 with a size of 500x500". 
+Finally the images are resized using +:normal => "240x240>"+ and 
++:small = > "55x55"+ parameters.
+ 
+ 
  
 
 
