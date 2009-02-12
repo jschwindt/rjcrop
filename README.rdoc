@@ -53,7 +53,7 @@ The tricky part creating this application was to find an simple way of interacti
 
   end
 
-The model includes the +has_attached_file+ as usual but it specifies a custom processor +jcropper+ that is slightly different from the original +thumbnail.rb+ processor provided by Paperclip.
+The model includes the +has_attached_file+ as usual but it specifies a custom processor +jcropper+ that is slightly different from the original thumbnail.rb processor provided by Paperclip.
 
 The process of creating the avatar works like this:
 
@@ -61,7 +61,7 @@ The process of creating the avatar works like this:
  
 - Then the user is presented with the +normal+ thumbnail that is used to choose the cropping rectangle.
  
-- Finally the Paperclip +reprocess!+ method is invoked in the controller:
+- Finally the Paperclip reprocess! method is invoked in the controller:
 
 ===The controller:
  # POST /users/1/crop
@@ -104,7 +104,7 @@ The +jcropper+ processor inherits from the original +Thumbnail+ processor but re
 
 ===The Jcrop and jQuery magic
 
-All the magic happens in +cropping.html.erb+ view and it should be easy to understand by reading the Jcrop documentation. One important thing to remark is how the +ratio+ between the original image and the normal thumbnail is computed using the +avatar_geometry+ helper method from the model:
+All the magic happens in cropping.html.erb view and it should be easy to understand by reading the Jcrop documentation. One important thing to remark is how the +ratio+ between the original image and the normal thumbnail is computed using the +avatar_geometry+ helper method from the model:
 
   function showPreview(coords)
   {
@@ -115,4 +115,5 @@ All the magic happens in +cropping.html.erb+ view and it should be easy to under
 
 ==Author
 
-Juan Schwindt *juan(at)schwindt.org*
+*Juan Schwindt*
+juan(at)schwindt.org
