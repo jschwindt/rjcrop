@@ -1,17 +1,61 @@
-= RJCROP
+=RJCrop
 
-This is a sample application that shows how to implement image cropping using the popular
-Paperclip rails plugin and the Jcrop jQuery plugin for selecting the cropping area.
+This is a sample application that shows how to implement image cropping using 
+the popular Paperclip rails plugin and the Jcrop jQuery plugin for selecting 
+the cropping area.
 
 Paperclip project page: http://github.com/thoughtbot/paperclip/tree/master
 Jcrop home page: http://deepliquid.com/content/Jcrop.html
 
-== Downloading and testing the appication
+==Downloading and testing the application
 
  git clone git://github.com/jschwindt/rjcrop.git
  cd rjcrop
  rake db:migrate
  ./script/server
 
+After that you can point your browser to http://localhost:3000, upload an image
+and see the how easy is to create a cropped image that can be used as an avatar.
+
+==How does it work?
+
+The tricky part creating this application was to find an simple way of interacting
+with Paperclip in order to create the cropped images after the model was saved. In 
+fact it was necessary to reprocess the attachments after they were initially loaded
+by the plugin.
+
+===The model
+
+  class User < ActiveRecord::Base
+  
+    has_attached_file :avatar,
+          :styles => { :normal => "240x240>",
+                       :small = > "55x55"   },
+          :convert_options => { :normal => *proc { |m| m.avatar_crop_str }*,
+                                :small => *proc { |m| m.avatar_crop_str }* },
+          *:processors => [:jcropper]*
+  
+    attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
+  
+    def avatar_crop_str
+      if !crop_x.blank? && !crop_y.blank? && !crop_w.blank? && !crop_h.blank?
+        "-crop #{crop_w}x#{crop_h}+#{crop_x}+#{crop_y}"
+      else
+        ""
+      end
+    end
+
+    # helper method used by the cropper view to get the real file geometry
+    def avatar_geometry(style = :original)
+      @geometry ||= {}
+      @geometry[style] ||= Paperclip::Geometry.from_file avatar.path(style)
+    end
+
+  end
+
+The model includes the +has_attached_file+ as usual but it specifies a custom 
+processor +jcropper+ that is slightly different from the original +thumbnail.rb+
+processor provided by Paperclip.
+ 
 
 
