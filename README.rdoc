@@ -63,17 +63,17 @@ processor provided by Paperclip.
 
 The process of creating the avatar works like this:
 
-- The user upload an image and Paperclip creates the +normal+ and the +small+ 
-version and because none of the +:crop_x, :crop_y, :crop_w, :crop_h+ are defined 
-+avatar_crop_str+ returns an empty string. That way the +jcropper+ processor 
-works just like the original +thumbnail+ processor.
+- The user uploads an image and Paperclip creates the + :normal+ and the+ :small+ 
+ version and because none of the+ :crop_x, :crop_y, :crop_w, :crop_h+ are defined 
+ +avatar_crop_str+ returns an empty string. That way the +jcropper+ processor 
+ works just like the original +thumbnail+ processor.
  
 - Then the user is presented with the +normal+ thumbnail that is used to choose 
-the cropping rectangle.
+ the cropping rectangle.
  
 - Finally the Paperclip +reprocess!+ method is invoked in the controller:
 
-Controller:
+===The controller:
  # POST /users/1/crop
  def crop
    @user = User.find(params[:id])
@@ -85,11 +85,11 @@ Controller:
  end 
  
 - Because now the cropping rectangle parameters are provided by the view, then 
-the +convert_options+ specifies how to crop the original image. These options 
-look like: +"-crop 500x500+125+450"+ that in the ImageMagick convert command 
-means "crop the original image at offset 125,450 with a size of 500x500". 
-Finally the images are resized using +:normal => "240x240>"+ and 
-+:small = > "55x55"+ parameters.
+ the +convert_options+ specifies how to crop the original image. These options 
+ look like: +"-crop 500x500+125+450"+ that in the ImageMagick convert command 
+ means "crop the original image at offset 125,450 with a size of 500x500". 
+ Finally the images are resized using+ :normal => "240x240>"+ and 
+ + :small = > "55x55"+ parameters.
  
  
  
