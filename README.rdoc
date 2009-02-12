@@ -4,8 +4,8 @@ This is a sample application that shows how to implement image cropping using
 the popular Paperclip rails plugin and the Jcrop jQuery plugin for selecting 
 the cropping area.
 
--Paperclip project page: http://github.com/thoughtbot/paperclip/tree/master
--Jcrop home page: http://deepliquid.com/content/Jcrop.html
+*Paperclip* project page: http://github.com/thoughtbot/paperclip/tree/master 
+*Jcrop* home page: http://deepliquid.com/content/Jcrop.html
 
 Most of the inspiration for this application was taken from this thread: 
 http://groups.google.com/group/paperclip-plugin/browse_thread/thread/817266ea5b37580c
@@ -18,15 +18,11 @@ and especially this helpful piece of code: http://gist.github.com/60470
  rake db:migrate
  ./script/server
 
-After that you can point your browser to http://localhost:3000, upload an image
-and see the how easy is to create a cropped image that can be used as an avatar.
+After that you can point your browser to http://localhost:3000, upload an image and see the how easy is to create a cropped image that can be used as an avatar.
 
 ==How does it work?
 
-The tricky part creating this application was to find an simple way of interacting
-with Paperclip in order to create the cropped images after the model was saved. In 
-fact it was necessary to reprocess the attachments after they were initially loaded
-by the plugin.
+The tricky part creating this application was to find an simple way of interacting with Paperclip in order to create the cropped images after the model was saved. In fact it was necessary to reprocess the attachments after they were initially loaded by the plugin.
 
 ===The model
 
@@ -57,13 +53,11 @@ by the plugin.
 
   end
 
-The model includes the +has_attached_file+ as usual but it specifies a custom 
-processor +jcropper+ that is slightly different from the original +thumbnail.rb+ 
-processor provided by Paperclip.
+The model includes the +has_attached_file+ as usual but it specifies a custom processor +jcropper+ that is slightly different from the original +thumbnail.rb+ processor provided by Paperclip.
 
 The process of creating the avatar works like this:
 
-- The user uploads an image and Paperclip creates the + :normal+ and the+ :small+ version and because none of the+ :crop_x, :crop_y, :crop_w, :crop_h+ are defined +avatar_crop_str+ returns an empty string. That way the +jcropper+ processor works just like the original +thumbnail+ processor.
+- The user uploads an image and Paperclip creates the :normal and the :small version and because none of the :crop_x, :crop_y, :crop_w, :crop_h are defined +avatar_crop_str+ returns an empty string. That way the +jcropper+ processor works just like the original +thumbnail+ processor.
  
 - Then the user is presented with the +normal+ thumbnail that is used to choose the cropping rectangle.
  
@@ -80,7 +74,7 @@ The process of creating the avatar works like this:
    redirect_to(users_url)
  end 
  
-- Because now the cropping rectangle parameters are provided by the view, then the +convert_options+ specifies how to crop the original image. These options look like: +"-crop 500x500+125+450"+ that in the ImageMagick convert command means "crop the original image at offset 125,450 with a size of 500x500". Finally the images are resized using+ :normal => "240x240>"+ and + :small = > "55x55"+ parameters.
+- Because now the cropping rectangle parameters are provided by the view, then the +convert_options+ specifies how to crop the original image. These options look like: "-crop 500x500+125+450" that in the ImageMagick convert command means "crop the original image at offset 125,450 with a size of 500x500". Finally the images are resized using :normal => "240x240>" and  :small = > "55x55" parameters.
 
 ===The lib/papercli_processors/jcropper.rb
 
@@ -93,7 +87,7 @@ The process of creating the avatar works like this:
     # Handles thumbnailing images that are uploaded.
     class Jcropper < Thumbnail
   
-      # Returns the command ImageMagick's +convert+ needs to transform the image
+      # Returns the command ImageMagick's convert needs to transform the image
       # into the thumbnail.
       def transformation_command
         scale, crop = @current_geometry.transformation_to(@target_geometry, crop?)
@@ -106,16 +100,11 @@ The process of creating the avatar works like this:
     end
   end
 
-The +jcropper+ processor inherits from the original +Thumbnail+ processor but
-redefines the +transformation_command+ in order to reverse the +converted_options+ 
-and +resize+ parameters that allow us to do the cropping before the final resize.
+The +jcropper+ processor inherits from the original +Thumbnail+ processor but redefines the +transformation_command+ in order to reverse the +converted_options+ and +resize+ parameters that allow us to do the cropping before the final resize.
 
 ===The Jcrop and jQuery magic
 
-All the magic happens in +cropping.html.erb+ view and it should be easy to understand
-by reading the Jcrop documentation. One important thing to remark is how the +ratio+ 
-between the original image and the normal thumbnail is computed using the 
-+avatar_geometry+ helper method from the model:
+All the magic happens in +cropping.html.erb+ view and it should be easy to understand by reading the Jcrop documentation. One important thing to remark is how the +ratio+ between the original image and the normal thumbnail is computed using the +avatar_geometry+ helper method from the model:
 
   function showPreview(coords)
   {
