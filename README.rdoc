@@ -1,5 +1,10 @@
 =RJCrop
 
+WARNING: This project doesn't work in production environment unless the following
+         configuration is set in config/environments/production.rb:
+            config.cache_classes = false
+         I was not able to find out why paperclip behaves this way. 
+            
 This is a sample application that shows how to implement image cropping using 
 the popular Paperclip rails plugin and the Jcrop jQuery plugin for selecting 
 the cropping area.
