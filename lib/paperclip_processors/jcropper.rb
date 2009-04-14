@@ -11,7 +11,7 @@ module Paperclip
       scale, crop = @current_geometry.transformation_to(@target_geometry, crop?)
       trans = ''
       if crop_string?
-        trans << " #{image_crop_string}"
+        trans << " #{crop_string}"
         trans << " -resize \"#{scale}\""
       else
         trans << " -resize \"#{scale}\""

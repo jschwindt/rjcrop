@@ -14,7 +14,7 @@ class User < ActiveRecord::Base
   
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
   
-  def avatar_crop_str
+  def crop_str
     if !crop_x.blank? && !crop_y.blank? && !crop_w.blank? && !crop_h.blank?
       "-crop #{crop_w}x#{crop_h}+#{crop_x}+#{crop_y}"
     else
