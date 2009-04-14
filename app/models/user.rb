@@ -6,10 +6,7 @@ class User < ActiveRecord::Base
   
   has_attached_file :avatar,
         :styles => { :normal => ["#{AVATAR_NW}x#{AVATAR_NH}>", :jpg],
-                     :small => ["#{AVATAR_SW}x#{AVATAR_SH}", :jpg] },
-        :convert_options => { :all => "-strip",
-                              :normal => proc { |m| m.avatar_crop_str },
-                              :small => proc { |m| m.avatar_crop_str } },
+                     :small => ["#{AVATAR_SW}x#{AVATAR_SH}#", :jpg] },
         :processors => [:jcropper],
         :default_url => "/images/default_avatar.png"
 
