@@ -20,7 +20,7 @@ and especially this helpful piece of code: http://groups.google.com/group/paperc
  git submodule update
  ./script/server
 
-After that you can point your browser to http://localhost:3000, upload an image and see the how easy is to create a cropped image that can be used as an avatar.
+After that you can point your browser to http://localhost:3000, upload an image and see how easy is to create a cropped image that can be used as an avatar.
 
 ==How does it work?
 
@@ -57,7 +57,7 @@ The model includes the +has_attached_file+ as usual but it specifies a custom pr
 
 The process of creating the avatar works like this:
 
-- The user uploads an image and Paperclip creates the :normal and the :small version and because none of the :crop_x, :crop_y, :crop_w, :crop_h are defined +crop_str+ returns an empty string. That way the +jcropper+ processor works just like the original +thumbnail+ processor.
+- The user uploads an image and Paperclip creates the :normal and the :small version and because none of the :crop_x, :crop_y, :crop_w, :crop_h are defined +crop_str+ returns an empty string. This way the +jcropper+ processor works just like the original +thumbnail+ processor.
  
 - Then the user is presented with the +normal+ thumbnail that is used to choose the cropping rectangle.
  
@@ -74,7 +74,7 @@ The process of creating the avatar works like this:
    redirect_to(users_url)
  end 
  
-- Because now the cropping rectangle parameters are provided by the view, then the +crop_str+ specifies how to crop the original image. These options look like: "-crop 500x500+125+450" that in the ImageMagick convert command means "crop the original image at offset 125,450 with a size of 500x500". Finally the images are resized using :normal => "240x240>" and  :small = > "55x55" parameters.
+- Because now the cropping rectangle parameters are provided by the view, then the +crop_str+ specifies how to crop the original image. The string looks like: "-crop 500x500+125+450" that in the ImageMagick convert command means "crop the original image at offset 125,450 with a size of 500x500". Finally the images are resized using :normal => "240x240>" and  :small = > "55x55" parameters.
 
 ===The lib/papercli_processors/jcropper.rb
 
