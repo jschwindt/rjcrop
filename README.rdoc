@@ -22,6 +22,8 @@ and especially this helpful piece of code: http://groups.google.com/group/paperc
 
 After that you can point your browser to http://localhost:3000, upload an image and see how easy is to create a cropped image that can be used as an avatar.
 
+This application was featured by Ryan Bates on his Railscast #182 http://railscasts.com/episodes/182-cropping-images
+
 ==How does it work?
 
 The tricky part creating this application was to find an simple way of interacting with Paperclip in order to create the cropped images after the model was saved. In fact it was necessary to reprocess the attachments after they were initially loaded by the plugin.
@@ -37,12 +39,10 @@ The tricky part creating this application was to find an simple way of interacti
   
     attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
   
-    def crop_str
-      if !crop_x.blank? && !crop_y.blank? && !crop_w.blank? && !crop_h.blank?
-        "-crop #{crop_w}x#{crop_h}+#{crop_x}+#{crop_y}"
-      else
-        ""
-      end
+    after_update :reprocess_avatar, :if => :cropping?
+  
+    def cropping?
+      !crop_x.blank? && !crop_y.blank? && !crop_w.blank? && !crop_h.blank?
     end
 
     # helper method used by the cropper view to get the real image geometry
@@ -51,30 +51,25 @@ The tricky part creating this application was to find an simple way of interacti
       @geometry[style] ||= Paperclip::Geometry.from_file avatar.path(style)
     end
 
+    private
+
+    def reprocess_avatar
+      avatar.reprocess!
+    end
+
   end
 
 The model includes the +has_attached_file+ as usual but it specifies a custom processor +jcropper+ that is slightly different from the original thumbnail.rb processor provided by Paperclip.
 
 The process of creating the avatar works like this:
 
-- The user uploads an image and Paperclip creates the :normal and the :small version and because none of the :crop_x, :crop_y, :crop_w, :crop_h are defined +crop_str+ returns an empty string. This way the +jcropper+ processor works just like the original +thumbnail+ processor.
+- The user uploads an image and Paperclip creates the :normal and the :small version and because none of the :crop_x, :crop_y, :crop_w, :crop_h are defined +cropping?+ returns false. This way the +jcropper+ processor works just like the original +thumbnail+ processor.
  
 - Then the user is presented with the +normal+ thumbnail that is used to choose the cropping rectangle.
  
-- Finally the Paperclip reprocess! method is invoked in the controller:
+- Finally when the user model is updated and +cropping?+ returns true, the Paperclip reprocess! method is invoked and the +jcropper+ processor crop the original image according to the cropping rectangle.
 
-===The controller:
- # POST /users/1/crop
- def crop
-   @user = User.find(params[:id])
-
-   if @user.update_attributes(params[:user])
-     @user.avatar.reprocess!
-   end
-   redirect_to(users_url)
- end 
- 
-- Because now the cropping rectangle parameters are provided by the view, then the +crop_str+ specifies how to crop the original image. The string looks like: "-crop 500x500+125+450" that in the ImageMagick convert command means "crop the original image at offset 125,450 with a size of 500x500". Finally the images are resized using :normal => "240x240>" and  :small = > "55x55" parameters.
+Because now the cropping rectangle parameters are provided by the view, then the +crop_command+ specifies how to crop the original image. The string looks like: "-crop 500x500+125+450" that in the ImageMagick convert command means "crop the original image at offset 125,450 with a size of 500x500". Finally the images are resized using :normal => "240x240>" and  :small = > "55x55" parameters.
 
 ===The lib/papercli_processors/jcropper.rb
 
@@ -86,33 +81,27 @@ The process of creating the avatar works like this:
   module Paperclip
     # Handles thumbnailing images that are uploaded.
     class Jcropper < Thumbnail
-  
+    
       def transformation_command
-        scale, crop = @current_geometry.transformation_to(@target_geometry, crop?)
-        trans = ''
-        if crop_string?
-          trans << " #{crop_string}"
-          trans << " -resize \"#{scale}\""
+        if crop_command
+          crop_command + super.sub(/ -crop \S+/, '')
         else
-          trans << " -resize \"#{scale}\""
-          trans << " -crop \"#{crop}\" +repage" if crop
+          super
         end
-        trans
       end
-
-      def crop_string
-        @attachment.instance.crop_str
+    
+      def crop_command
+        target = @attachment.instance
+        if target.cropping?
+          " -crop '#{target.crop_w.to_i}x#{target.crop_h.to_i}+#{target.crop_x.to_i}+#{target.crop_y.to_i}'"
+        end
       end
-
-      def crop_string?
-        not crop_string.blank?
-      end
-
+  
     end
    
   end
 
-The +jcropper+ processor inherits from the original +Thumbnail+ processor but redefines the +transformation_command+ in order to get the +crop_string+ from the model if it is defined.
+The +jcropper+ processor inherits from the original +Thumbnail+ processor but redefines the +transformation_command+ in order to get the cropping rectangle from the model if it is defined.
 Otherwise it works just like the original thumbnail processor.
 
 ===The Jcrop and jQuery magic
