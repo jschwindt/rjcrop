@@ -48,15 +48,6 @@ class UsersController < ApplicationController
     end
   end
 
-  # POST /users/1/crop
-  def crop
-    @user = User.find(params[:id])
-
-    if @user.update_attributes(params[:user])
-      @user.avatar.reprocess!
-    end
-    redirect_to(users_url)
-  end
   
   # DELETE /users/1
   def destroy

@@ -1,7 +1,7 @@
 ActionController::Routing::Routes.draw do |map|
   # The priority is based upon order of creation: first created -> highest priority.
 
-  map.resources :users, :member => { :crop => :post }
+  map.resources :users
   map.root :controller => "users"
 
   # Sample of regular route:
