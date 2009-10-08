@@ -22,9 +22,9 @@ and especially this helpful piece of code: http://groups.google.com/group/paperc
 
 After that you can point your browser to http://localhost:3000, upload an image and see how easy is to create a cropped image that can be used as an avatar.
 
-This application was featured by Ryan Bates on his Railscast #182 http://railscasts.com/episodes/182-cropping-images
-
 ==How does it work?
+
+This application was featured by Ryan Bates on his Railscast #182 http://railscasts.com/episodes/182-cropping-images
 
 The tricky part creating this application was to find an simple way of interacting with Paperclip in order to create the cropped images after the model was saved. In fact it was necessary to reprocess the attachments after they were initially loaded by the plugin.
 
