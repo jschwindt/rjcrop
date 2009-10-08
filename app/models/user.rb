@@ -12,19 +12,23 @@ class User < ActiveRecord::Base
 
   validates_attachment_content_type :avatar, :content_type => ['image/jpeg', 'image/pjpeg', 'image/jpg', 'image/png']
   
+  after_update :reprocess_avatar, :if => :cropping?
+  
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
   
-  def crop_str
-    if !crop_x.blank? && !crop_y.blank? && !crop_w.blank? && !crop_h.blank?
-      "-crop #{crop_w}x#{crop_h}+#{crop_x}+#{crop_y}"
-    else
-      ""
-    end
+  def cropping?
+    !crop_x.blank? && !crop_y.blank? && !crop_w.blank? && !crop_h.blank?
   end
-  
+    
   def avatar_geometry(style = :original)
     @geometry ||= {}
     @geometry[style] ||= Paperclip::Geometry.from_file avatar.path(style)
+  end
+  
+  private
+  
+  def reprocess_avatar
+    avatar.reprocess!
   end
 
 end

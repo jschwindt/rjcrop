@@ -6,28 +6,22 @@
 module Paperclip
   # Handles thumbnailing images that are uploaded.
   class Jcropper < Thumbnail
-  
+    
     def transformation_command
-      scale, crop = @current_geometry.transformation_to(@target_geometry, crop?)
-      trans = ''
-      if crop_string?
-        trans << " #{crop_string}"
-        trans << " -resize \"#{scale}\""
+      if crop_command
+        crop_command + super.sub(/ -crop \S+/, '')
       else
-        trans << " -resize \"#{scale}\""
-        trans << " -crop \"#{crop}\" +repage" if crop
+        super
       end
-      trans
     end
-
-    def crop_string
-      @attachment.instance.crop_str
+    
+    def crop_command
+      target = @attachment.instance
+      if target.cropping?
+        " -crop '#{target.crop_w.to_i}x#{target.crop_h.to_i}+#{target.crop_x.to_i}+#{target.crop_y.to_i}'"
+      end
     end
-
-    def crop_string?
-      not crop_string.blank?
-    end
-
+  
   end
    
 end
