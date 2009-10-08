@@ -117,5 +117,4 @@ All the magic happens in cropping.html.erb view and it should be easy to underst
 
 ==Author
 
-Juan Schwindt
-juan(at)schwindt.org
+Juan Schwindt :: juan(at)schwindt.org
