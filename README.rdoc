@@ -26,7 +26,7 @@ After that you can point your browser to http://localhost:3000, upload an image 
 
 This application was featured by Ryan Bates on his Railscast #182 http://railscasts.com/episodes/182-cropping-images
 
-The tricky part creating this application was to find an simple way of interacting with Paperclip in order to create the cropped images after the model was saved. In fact it was necessary to reprocess the attachments after they were initially loaded by the plugin.
+The tricky part creating this application was to find a simple way of interacting with Paperclip in order to create the cropped images after the model was saved. In fact it was necessary to reprocess the attachments after they were initially loaded by the plugin.
 
 ===The model
 
@@ -106,7 +106,7 @@ Otherwise it works just like the original thumbnail processor.
 
 ===The Jcrop and jQuery magic
 
-All the magic happens in cropping.html.erb view and it should be easy to understand by reading the Jcrop documentation. One important thing to remark is how the +ratio+ between the original image and the normal thumbnail is computed using the +avatar_geometry+ helper method from the model:
+All the magic happens in cropping.html.erb view and it should be easy to understand it by reading the Jcrop documentation. One important thing to remark is how the +ratio+ between the original image and the normal thumbnail is computed using the +avatar_geometry+ helper method from the model:
 
   function showPreview(coords)
   {
