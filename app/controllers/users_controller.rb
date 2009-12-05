@@ -30,6 +30,8 @@ class UsersController < ApplicationController
       else
         render :action => 'cropping'
       end
+    else
+      render :action => 'new'
     end
   end
 
